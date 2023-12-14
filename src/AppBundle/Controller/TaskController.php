@@ -15,14 +15,17 @@ class TaskController extends Controller
      */
     public function listAction()
     {
+
         return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('AppBundle:Task')->findBy(['user' => $this->getUser()])]);
     }
+
 
     /**
      * @Route("/tasks/create", name="task_create")
      */
     public function createAction(Request $request)
     {
+
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
 
@@ -44,13 +47,14 @@ class TaskController extends Controller
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
+
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
      */
     public function editAction(Task $task, Request $request)
     {
 
-        if ($task->getUser() !== $this->getUser()){
+        if ($task->getUser() !== $this->getUser()) {
 
             $this->addFlash('error', "Cette tâche n'est pas disponible.");
 
@@ -75,13 +79,14 @@ class TaskController extends Controller
         ]);
     }
 
+
     /**
      * @Route("/tasks/{id}/toggle", name="task_toggle")
      */
     public function toggleTaskAction(Task $task)
     {
 
-        if ($task->getUser() !== $this->getUser()){
+        if ($task->getUser() !== $this->getUser()) {
 
             $this->addFlash('error', "Cette tâche n'est pas disponible.");
 
@@ -96,17 +101,20 @@ class TaskController extends Controller
         return $this->redirectToRoute('task_list');
     }
 
+
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
     public function deleteTaskAction(Task $task)
     {
 
-        if ($task->getUser() !== $this->getUser()){
+        if ($this->getUser()->getRole() !== 'ROLE_ADMIN') {
+            if ($task->getUser() !== $this->getUser()) {
 
-            $this->addFlash('error', "Cette tâche n'est pas disponible.");
+                $this->addFlash('error', "Cette tâche n'est pas disponible.");
 
-            return $this->redirectToRoute('homepage');
+                return $this->redirectToRoute('homepage');
+            }
         }
 
         $em = $this->getDoctrine()->getManager();

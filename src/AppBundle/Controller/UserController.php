@@ -15,6 +15,14 @@ class UserController extends Controller
      */
     public function listAction()
     {
+        if ($this->getUser()->getRole() !== 'ROLE_ADMIN') {
+
+            $this->addFlash('error', "L'accès à cette page ne vous est pas autorisé.");
+
+            return $this->redirectToRoute('homepage');
+
+        }
+
         return $this->render('user/list.html.twig', ['users' => $this->getDoctrine()->getRepository('AppBundle:User')->findAll()]);
     }
 
