@@ -15,7 +15,7 @@ class TaskController extends Controller
      */
     public function listAction()
     {
-        return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('AppBundle:Task')->findAll()]);
+        return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('AppBundle:Task')->findBy(['user' => $this->getUser()])]);
     }
 
     /**
@@ -30,6 +30,8 @@ class TaskController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+
+            $task->setUser($this->getUser());
 
             $em->persist($task);
             $em->flush();
@@ -47,6 +49,14 @@ class TaskController extends Controller
      */
     public function editAction(Task $task, Request $request)
     {
+
+        if ($task->getUser() !== $this->getUser()){
+
+            $this->addFlash('error', "Cette tâche n'est pas disponible.");
+
+            return $this->redirectToRoute('homepage');
+        }
+
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
@@ -70,6 +80,14 @@ class TaskController extends Controller
      */
     public function toggleTaskAction(Task $task)
     {
+
+        if ($task->getUser() !== $this->getUser()){
+
+            $this->addFlash('error', "Cette tâche n'est pas disponible.");
+
+            return $this->redirectToRoute('homepage');
+        }
+
         $task->toggle(!$task->isDone());
         $this->getDoctrine()->getManager()->flush();
 
@@ -83,6 +101,14 @@ class TaskController extends Controller
      */
     public function deleteTaskAction(Task $task)
     {
+
+        if ($task->getUser() !== $this->getUser()){
+
+            $this->addFlash('error', "Cette tâche n'est pas disponible.");
+
+            return $this->redirectToRoute('homepage');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
