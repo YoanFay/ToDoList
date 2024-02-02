@@ -57,7 +57,9 @@
         "symfony/maker-bundle": "^1.0",
         "symfony/phpunit-bridge": "^6.2",
         "symfony/stopwatch": "6.4.*",
-        "symfony/web-profiler-bundle": "6.4.*"
+        "symfony/web-profiler-bundle": "6.4.*",
+        "phpstan/phpstan": "^1.10",
+        "squizlabs/php_codesniffer": "*"
     },
     "scripts": {
         "symfony-scripts": [

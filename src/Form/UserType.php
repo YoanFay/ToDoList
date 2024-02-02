@@ -35,7 +35,7 @@ class UserType extends AbstractType
                     'class' => 'form-control'
                 ]
             ])
-            ->add('role', ChoiceType::class,[
+            ->add('role', ChoiceType::class, [
                 'choices' => [
                     'Utilisateur' => 'ROLE_USER',
                     'Administrateur' => 'ROLE_ADMIN'

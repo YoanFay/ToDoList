@@ -6,20 +6,20 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
-class Authenticator extends AbstractFormLoginAuthenticator
+class Authenticator
 {
     use TargetPathTrait;
 
@@ -39,7 +39,7 @@ class Authenticator extends AbstractFormLoginAuthenticator
     private $csrfTokenManager;
 
     /**
-     * @var UserPasswordEncoderInterface
+     * @var UserPasswordHasherInterface
      */
     private $passwordEncoder;
 
@@ -48,17 +48,16 @@ class Authenticator extends AbstractFormLoginAuthenticator
      * @param EntityManagerInterface       $entityManager    parameter
      * @param RouterInterface              $router           parameter
      * @param CsrfTokenManagerInterface    $csrfTokenManager parameter
-     * @param UserPasswordEncoderInterface $passwordEncoder  parameter
+     * @param UserPasswordHasherInterface $passwordEncoder  parameter
      */
-    public function __construct(EntityManagerInterface $entityManager, RouterInterface $router, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(EntityManagerInterface $entityManager, RouterInterface $router, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder)
     {
 
         $this->entityManager = $entityManager;
         $this->router = $router;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
-
-    }//end __construct()
+    }
 
 
     /**
@@ -74,7 +73,6 @@ class Authenticator extends AbstractFormLoginAuthenticator
         }
 
         return false;
-
     }
 
 
@@ -99,7 +97,6 @@ class Authenticator extends AbstractFormLoginAuthenticator
         );
 
         return $credentials;
-
     }
 
 
@@ -129,11 +126,11 @@ class Authenticator extends AbstractFormLoginAuthenticator
 
     /**
      * @param array         $credentials parameter
-     * @param UserInterface $user        parameter
+     * @param PasswordAuthenticatedUserInterface $user        parameter
      *
      * @return bool
      */
-    public function checkCredentials($credentials, UserInterface $user): bool
+    public function checkCredentials($credentials, PasswordAuthenticatedUserInterface $user): bool
     {
 
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
@@ -166,6 +163,4 @@ class Authenticator extends AbstractFormLoginAuthenticator
 
         return $this->router->generate('login');
     }
-
-
 }

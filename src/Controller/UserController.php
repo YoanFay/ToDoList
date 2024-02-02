@@ -7,6 +7,7 @@ use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -15,14 +16,16 @@ class UserController extends AbstractController
     /**
      * @Route("/users", name="user_list")
      */
-    public function listAction(UserRepository $userRepository)
+    public function listAction(UserRepository $userRepository): Response
     {
-        if ($this->getUser() == null || $this->getUser()->getRole() !== 'ROLE_ADMIN') {
 
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($this->getUser() == null || $user->getRole() !== 'ROLE_ADMIN') {
             $this->addFlash('error', "L'accès à cette page ne vous est pas autorisé.");
 
             return $this->redirectToRoute('homepage');
-
         }
 
         return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
@@ -31,7 +34,7 @@ class UserController extends AbstractController
     /**
      * @Route("/users/create", name="user_create")
      */
-    public function createAction(Request $request, EntityManagerInterface $entityManager)
+    public function createAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -56,14 +59,14 @@ class UserController extends AbstractController
     /**
      * @Route("/users/{id}/edit", name="user_edit")
      */
-    public function editAction(User $user, Request $request, EntityManagerInterface $entityManager)
+    public function editAction(User $user, Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
+            $password = password_hash($user->getPassword(), PASSWORD_BCRYPT);
             $user->setPassword($password);
 
             $entityManager->flush();

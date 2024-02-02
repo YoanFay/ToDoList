@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -9,67 +10,76 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ORM\Table("user")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("email")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
-     * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
      * @Assert\NotBlank(message="Vous devez saisir un nom d'utilisateur.")
      */
-    private $username;
+    private string $username;
 
     /**
      * @ORM\Column(type="string", length=64)
      */
-    private $password;
+    private string $password;
 
     /**
      * @ORM\Column(type="string", length=60, unique=true)
      * @Assert\NotBlank(message="Vous devez saisir une adresse email.")
      * @Assert\Email(message="Le format de l'adresse n'est pas correcte.")
      */
-    private $email;
+    private string $email;
 
     /**
      * @ORM\Column(type="string", length=45)
      */
-    private $role;
+    private string $role;
 
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
 
     /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+
+        $this->id = $id;
+    }
+
+
+    /**
      * @return string
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->username;
     }
 
 
     /**
-     * @param $username
+     * @param string $username
      *
      * @return void
      */
-    public function setUsername($username)
+    public function setUsername(string $username): void
     {
         $this->username = $username;
     }
@@ -85,20 +95,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getPassword(): null|string
+    public function getPassword(): string
     {
         return $this->password;
     }
 
 
     /**
-     * @param $password
+     * @param string $password
      *
      * @return void
      */
-    public function setPassword($password)
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
@@ -114,11 +124,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     /**
-     * @param $email
+     * @param string $email
      *
      * @return void
      */
-    public function setEmail($email)
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
@@ -135,11 +145,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     /**
-     * @param mixed $role
+     * @param string $role
      *
      * @return void
      */
-    public function setRole($role)
+    public function setRole(string $role): void
     {
 
         $this->role = $role;
