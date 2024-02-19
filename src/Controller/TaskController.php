@@ -14,9 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TaskController extends AbstractController
 {
-    /**
-     * @Route("/tasks", name="task_list")
-     */
+    #[Route('/tasks', name: "task_list")]
     public function listAction(TaskRepository $taskRepository): Response
     {
 
@@ -24,10 +22,8 @@ class TaskController extends AbstractController
     }
 
 
-    /**
-     * @Route("/tasks/create", name="task_create")
-     */
-    public function createAction(Request $request, TaskRepository $taskRepository, EntityManagerInterface $entityManager): Response
+    #[Route('/tasks/create', name: "task_create")]
+    public function createAction(Request $request, EntityManagerInterface $entityManager): Response
     {
 
         $task = new Task();
@@ -53,9 +49,7 @@ class TaskController extends AbstractController
     }
 
 
-    /**
-     * @Route("/tasks/{id}/edit", name="task_edit")
-     */
+    #[Route('/tasks/{id}/edit', name: "task_edit")]
     public function editAction(Task $task, Request $request, EntityManagerInterface $entityManager): Response
     {
 
@@ -83,10 +77,7 @@ class TaskController extends AbstractController
         ]);
     }
 
-
-    /**
-     * @Route("/tasks/{id}/toggle", name="task_toggle")
-     */
+    #[Route('/tasks/{id}/toggle', name: "task_toggle")]
     public function toggleTaskAction(TaskRepository $taskRepository, int $id, EntityManagerInterface $entityManager): Response
     {
 
@@ -107,15 +98,16 @@ class TaskController extends AbstractController
         $task->toggle(!$task->isDone());
         $entityManager->flush();
 
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+        if ($task->isDone()) {
+            $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+        } else {
+            $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme non faite.', $task->getTitle()));
+        }
 
         return $this->redirectToRoute('task_list');
     }
 
-
-    /**
-     * @Route("/tasks/{id}/delete", name="task_delete")
-     */
+    #[Route('/tasks/{id}/delete', name: "task_delete")]
     public function deleteTaskAction(TaskRepository $taskRepository, EntityManagerInterface $entityManager, int $id): Response
     {
 
