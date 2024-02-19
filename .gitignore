@@ -15,6 +15,8 @@
 !var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
+/public/test-coverage/
+/phpunit.xml.dist.bak
 
 ###> symfony/phpunit-bridge ###
 .phpunit.result.cache
